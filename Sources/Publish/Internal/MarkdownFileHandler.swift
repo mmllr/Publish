@@ -5,6 +5,7 @@
 */
 
 import Files
+import Plot
 
 internal struct MarkdownFileHandler<Site: Website> {
     func addMarkdownFiles(
@@ -21,7 +22,9 @@ internal struct MarkdownFileHandler<Site: Website> {
             }
         }
 
-        for subfolder in folder.subfolders {
+        for languageFolder in folder.subfolders {
+            guard let language = Language(rawValue: languageFolder.name) else { continue }
+            for subfolder in languageFolder.subfolders {
             guard let sectionID = Site.SectionID(rawValue: subfolder.name.lowercased()) else {
                 try addPagesForMarkdownFiles(
                     inFolder: subfolder,
@@ -39,7 +42,7 @@ internal struct MarkdownFileHandler<Site: Website> {
 
                 if file.nameExcludingExtension == "index", file.parent == subfolder {
                     let content = try factory.makeContent(fromFile: file)
-                    context.sections[sectionID].content = content
+                    context.sections[sectionID][language] = content
                     continue
                 }
 
@@ -65,6 +68,7 @@ internal struct MarkdownFileHandler<Site: Website> {
                     throw wrap(error, forPath: path)
                 }
             }
+        }
         }
 
         try addPagesForMarkdownFiles(

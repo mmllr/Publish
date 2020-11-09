@@ -5,6 +5,7 @@
 */
 
 import Foundation
+import Plot
 
 /// A map type containing all sections within a given website.
 /// You access an instance of this type through the current `PublishingContext`.

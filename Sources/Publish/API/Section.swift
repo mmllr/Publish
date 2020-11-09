@@ -5,6 +5,7 @@
 */
 
 import Foundation
+import Plot
 
 /// Type representing one of a website's top sections, as defined by
 /// its `SectionID` type. Each section can contain content of its own,
@@ -18,7 +19,13 @@ public struct Section<Site: Website>: Location {
     /// The date of the last modified item within the section.
     public private(set) var lastItemModificationDate: Date?
     public var path: Path { Path(id.rawValue) }
-    public var content = Content()
+    public var content: Content {
+        get { contents[currentLanguage]! }
+        set { contents[currentLanguage] = newValue }
+    }
+    private var contents: [Language: Content] = [:]
+    private var paths: [Language: Path] = [:]
+    public var currentLanguage: Language = .english
 
     internal var allTags: AnySequence<Tag> { .init(itemIndexesByTag.keys) }
 
@@ -27,6 +34,8 @@ public struct Section<Site: Website>: Location {
 
     internal init(id: Site.SectionID) {
         self.id = id
+        self.contents[.english] = Content()
+        self.paths[.english] = Path(id.rawValue)
         self.title = id.rawValue.capitalized
     }
 }
@@ -179,5 +188,17 @@ private extension Section {
                 itemIndexesByTag[tag, default: []].insert(index)
             }
         }
+    }
+}
+
+extension Section {
+    public subscript(language: Language) -> Content {
+        get { contents[language, default: Content()] }
+        set { contents[language] = newValue }
+    }
+
+    public subscript(language: Language) -> Path {
+        get { paths[language, default: Path(id.rawValue)] }
+        set { paths[language] = newValue }
     }
 }
