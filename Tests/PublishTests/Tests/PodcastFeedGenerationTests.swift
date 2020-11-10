@@ -135,7 +135,8 @@ final class PodcastFeedGenerationTests: PublishTestCase {
             path: "a",
             sectionID: .one,
             metadata: .init(podcast: .init()),
-            content: Content(audio: audio)
+            content: Content(audio: audio),
+            language: .english
         )
 
         let itemB = Item<Site>(
@@ -145,7 +146,8 @@ final class PodcastFeedGenerationTests: PublishTestCase {
             content: Content(
                 lastModified: itemA.lastModified,
                 audio: audio
-            )
+            ),
+            language: .english
         )
 
         try generateFeed(in: folder, generationSteps: [

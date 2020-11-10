@@ -47,7 +47,7 @@ private extension HTMLGenerator {
 
     func generateIndexHTML() throws {
         let html = try theme.makeIndexHTML(context.index, context)
-        let indexFile = try context.createOutputFile(at: "index.html")
+        let indexFile = try context.createOutputFile(at: context.index.path.appendingComponent("index.html"))
         try indexFile.write(html.render(indentedBy: indentation))
     }
 

@@ -24,7 +24,9 @@ public struct PublishingContext<Site: Website> {
     /// dates from Markdown files.
     public var dateFormatter: DateFormatter
     /// A representation of the website's main index page.
-    public var index = Index()
+    public var index: Index {
+        languageIndexes[site.language, default: languageIndexes[.english]!]
+    }
     /// The sections that the website contains.
     public var sections = SectionMap<Site>() { didSet { tagCache.tags = nil } }
     /// The free-form pages that the website contains.
@@ -37,6 +39,7 @@ public struct PublishingContext<Site: Website> {
     private let folders: Folder.Group
     private var tagCache = TagCache()
     private var stepName: String
+    private var languageIndexes: [Language: Index] = [.english: Index(path: Path(Language.english.rawValue))]
 
     internal init(site: Site,
                   folders: Folder.Group,
@@ -377,5 +380,11 @@ private extension PublishingContext {
             let path = Path(folder.path + path.string)
             throw FileIOError(path: path, reason: .fileCreationFailed)
         }
+    }
+}
+
+extension PublishingContext {
+    mutating func add(index content: Content, for language: Language) {
+        languageIndexes[language] = Index(path: Path(language.rawValue), content: content)
     }
 }

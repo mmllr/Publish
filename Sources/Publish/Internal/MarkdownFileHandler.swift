@@ -14,16 +14,18 @@ internal struct MarkdownFileHandler<Site: Website> {
     ) throws {
         let factory = context.makeMarkdownContentFactory()
 
-        if let indexFile = try? folder.file(named: "index.md") {
-            do {
-                context.index.content = try factory.makeContent(fromFile: indexFile)
-            } catch {
-                throw wrap(error, forPath: "\(folder.path)index.md")
-            }
-        }
 
         for languageFolder in folder.subfolders {
             guard let language = Language(rawValue: languageFolder.name) else { continue }
+
+            if let indexFile = try? languageFolder.file(named: "index.md") {
+                do {
+                    context.add(index: try factory.makeContent(fromFile: indexFile), for: language)
+                } catch {
+                    throw wrap(error, forPath: "\(folder.path)index.md")
+                }
+            }
+
             for subfolder in languageFolder.subfolders {
                 guard let sectionID = Site.SectionID(rawValue: subfolder.name.lowercased()) else {
                     try addPagesForMarkdownFiles(

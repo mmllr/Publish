@@ -19,7 +19,7 @@ extension Item: Stubbable where Site == WebsiteStub.WithoutItemMetadata {
             content: Content(
                 date: defaultDate,
                 lastModified: defaultDate
-            )
+            ), language: .english
         )
     }
 
@@ -36,7 +36,7 @@ extension Item: Stubbable where Site == WebsiteStub.WithoutItemMetadata {
             content: Content(
                 date: defaultDate,
                 lastModified: defaultDate
-            )
+            ), language: .english
         )
     }
 }
