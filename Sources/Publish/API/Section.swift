@@ -66,7 +66,7 @@ public extension Section {
         withMetadata metadata: Site.ItemMetadata,
         configure: (inout Item<Site>) throws -> Void
     ) rethrows {
-        var item = Item<Site>(path: path, sectionID: id, metadata: metadata)
+        var item = Item<Site>(path: path, sectionID: id, metadata: metadata, language: currentLanguage)
         try configure(&item)
         item.sectionID = id
         addItem(item)

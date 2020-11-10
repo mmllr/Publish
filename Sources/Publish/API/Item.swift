@@ -5,6 +5,7 @@
 */
 
 import Foundation
+import Plot
 
 /// An item represents a website page that is contained within a `Section`,
 /// and is typically used to implement lists of content, such as a blogs or
@@ -22,6 +23,7 @@ public struct Item<Site: Website>: AnyItem, Hashable {
     public var path: Path { makeAbsolutePath() }
     public var content: Content
     public var rssProperties: ItemRSSProperties
+    public let language: Language
 
     internal let relativePath: Path
 
@@ -38,13 +40,15 @@ public struct Item<Site: Website>: AnyItem, Hashable {
                 metadata: Site.ItemMetadata,
                 tags: [Tag] = [],
                 content: Content = Content(),
-                rssProperties: ItemRSSProperties = .init()) {
+                rssProperties: ItemRSSProperties = .init(),
+                language: Language) {
         self.relativePath = path
         self.sectionID = sectionID
         self.metadata = metadata
         self.tags = tags
         self.content = content
         self.rssProperties = rssProperties
+        self.language = language
     }
 }
 

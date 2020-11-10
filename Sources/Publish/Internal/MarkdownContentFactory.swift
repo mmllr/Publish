@@ -8,6 +8,7 @@ import Foundation
 import Ink
 import Files
 import Codextended
+import Plot
 
 internal struct MarkdownContentFactory<Site: Website> {
     let parser: MarkdownParser
@@ -21,7 +22,8 @@ internal struct MarkdownContentFactory<Site: Website> {
 
     func makeItem(fromFile file: File,
                   at path: Path,
-                  sectionID: Site.SectionID) throws -> Item<Site> {
+                  sectionID: Site.SectionID,
+                  language: Language) throws -> Item<Site> {
         let markdown = try parser.parse(file.readAsString())
         let decoder = makeMetadataDecoder(for: markdown)
 
@@ -37,7 +39,8 @@ internal struct MarkdownContentFactory<Site: Website> {
             metadata: metadata,
             tags: tags ?? [],
             content: content,
-            rssProperties: rssProperties ?? .init()
+            rssProperties: rssProperties ?? .init(),
+            language: language
         )
     }
 

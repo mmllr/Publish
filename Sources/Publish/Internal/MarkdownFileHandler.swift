@@ -1,8 +1,8 @@
 /**
-*  Publish
-*  Copyright (c) John Sundell 2019
-*  MIT license, see LICENSE file for details
-*/
+ *  Publish
+ *  Copyright (c) John Sundell 2019
+ *  MIT license, see LICENSE file for details
+ */
 
 import Files
 import Plot
@@ -25,59 +25,60 @@ internal struct MarkdownFileHandler<Site: Website> {
         for languageFolder in folder.subfolders {
             guard let language = Language(rawValue: languageFolder.name) else { continue }
             for subfolder in languageFolder.subfolders {
-            guard let sectionID = Site.SectionID(rawValue: subfolder.name.lowercased()) else {
-                try addPagesForMarkdownFiles(
-                    inFolder: subfolder,
-                    to: &context,
-                    recursively: true,
-                    parentPath: Path(subfolder.name),
-                    factory: factory
-                )
+                guard let sectionID = Site.SectionID(rawValue: subfolder.name.lowercased()) else {
+                    try addPagesForMarkdownFiles(
+                        inFolder: subfolder,
+                        to: &context,
+                        recursively: true,
+                        parentPath: Path(subfolder.name),
+                        factory: factory
+                    )
 
-                continue
-            }
-
-            for file in subfolder.files.recursive {
-                guard file.isMarkdown else { continue }
-
-                if file.nameExcludingExtension == "index", file.parent == subfolder {
-                    let content = try factory.makeContent(fromFile: file)
-                    context.sections[sectionID][language] = content
                     continue
                 }
 
-                do {
-                    let fileName = file.nameExcludingExtension
-                    let path: Path
+                for file in subfolder.files.recursive {
+                    guard file.isMarkdown else { continue }
 
-                    if let parentPath = file.parent?.path(relativeTo: subfolder) {
-                        path = Path(parentPath).appendingComponent(fileName)
-                    } else {
-                        path = Path(fileName)
+                    if file.nameExcludingExtension == "index", file.parent == subfolder {
+                        let content = try factory.makeContent(fromFile: file)
+                        context.sections[sectionID][language] = content
+                        continue
                     }
 
-                    let item = try factory.makeItem(
-                        fromFile: file,
-                        at: path,
-                        sectionID: sectionID
-                    )
+                    do {
+                        let fileName = file.nameExcludingExtension
+                        let path: Path
 
-                    context.addItem(item)
-                } catch {
-                    let path = Path(file.path(relativeTo: folder))
-                    throw wrap(error, forPath: path)
+                        if let parentPath = file.parent?.path(relativeTo: subfolder) {
+                            path = Path(parentPath).appendingComponent(fileName)
+                        } else {
+                            path = Path(fileName)
+                        }
+
+                        let item = try factory.makeItem(
+                            fromFile: file,
+                            at: path,
+                            sectionID: sectionID,
+                            language: language
+                        )
+
+                        context.addItem(item)
+                    } catch {
+                        let path = Path(file.path(relativeTo: folder))
+                        throw wrap(error, forPath: path)
+                    }
                 }
             }
-        }
-        }
 
-        try addPagesForMarkdownFiles(
-            inFolder: folder,
-            to: &context,
-            recursively: false,
-            parentPath: "",
-            factory: factory
-        )
+            try addPagesForMarkdownFiles(
+                inFolder: languageFolder,
+                to: &context,
+                recursively: false,
+                parentPath: Path(language.rawValue),
+                factory: factory
+            )
+        }
     }
 }
 
